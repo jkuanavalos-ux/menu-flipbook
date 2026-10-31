@@ -3,8 +3,7 @@
   --w:min(44vw,460px,calc((100dvh - 120px) * .75));
   --ink:#3a2410;--ink-soft:#6b4a26;--paper:#e7cf86;--wood:#2b1a0f;
   --serif:"IM Fell English","IM Fell DW Pica",Georgia,"Palatino Linotype",serif;
-  --noise:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .38 0 0 0 0 .24 0 0 0 0 .06 0 0 0 .42 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-}
+  }
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{overflow:hidden;font-family:var(--serif);color:var(--ink);background:radial-gradient(ellipse at 50% 40%,#4a2f1b 0,var(--wood) 70%) ;display:flex;flex-direction:column;-webkit-tap-highlight-color:transparent}
@@ -15,15 +14,9 @@ body{overflow:hidden;font-family:var(--serif);color:var(--ink);background:radial
 .bookbox.atcover{transform:translateX(-25%)}
 .bookbox.atend{transform:translateX(25%)}
 .book{width:100%;height:100%;touch-action:pan-y;user-select:none}
-.page{background:var(--paper);overflow:hidden}
+.page{background:var(--paper);overflow:hidden;will-change:transform}
 /* ===== Papel viejo ===== */
-.paper{position:relative;width:100%;height:100%;box-shadow:inset 0 0 0 1px rgba(90,50,10,.25);overflow:hidden;font-size:calc(var(--w) / 25);padding:2.4em 2.1em 2em;
-  background:
-    radial-gradient(circle at 82% 88%,rgba(120,65,10,.16) 0,rgba(120,65,10,0) 13%),
-    radial-gradient(circle at 14% 18%,rgba(140,90,20,.12) 0,rgba(140,90,20,0) 16%),
-    radial-gradient(ellipse at center,rgba(255,235,160,0) 45%,rgba(110,60,10,.42) 100%),
-    var(--noise),
-    linear-gradient(160deg,#ecd78f,#dcbf70)}
+.paper{position:relative;width:100%;height:100%;overflow:hidden;font-size:calc(var(--w) / 25);padding:2.4em 2.1em 2em;background:#e3c978 url('paper.jpg') center/100% 100% no-repeat;contain:layout paint}
 .paper h2{font-size:2em;font-weight:400;text-align:center;margin:.1em 0 .1em;letter-spacing:.02em}
 .paper h2::after{content:"";display:block;width:55%;height:1px;margin:.35em auto 0;background:linear-gradient(90deg,transparent,var(--ink-soft),transparent)}
 .note{text-align:center;font-style:italic;color:var(--ink-soft);margin:.5em 0 1em;font-size:.95em}
@@ -44,8 +37,7 @@ body{overflow:hidden;font-family:var(--serif);color:var(--ink);background:radial
 .toc b{font-weight:400}
 
 /* ===== Tapas ===== */
-.cover{padding:1.2em;background:
-    radial-gradient(ellipse at center,rgba(255,235,160,0) 40%,rgba(90,45,5,.55) 100%),var(--noise),linear-gradient(160deg,#d9b45c,#bf9340)}
+.cover{padding:1.2em;background:#c9a04e url('cover.jpg') center/100% 100% no-repeat}
 .cover .frame{height:100%;border:.15em double var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1.5em;gap:.6em}
 .cover h1{font-size:3.2em;font-weight:400;line-height:1;margin:.1em 0;letter-spacing:.02em}
 .since,.open{margin:0;font-size:.95em;letter-spacing:.12em;color:var(--ink-soft)}
