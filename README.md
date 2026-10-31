@@ -14,3 +14,6 @@ Cada sección es una página (hasta unos 7 platos).
 ## Cómo publicarlo
 En Vercel: *Add New → Project* → elegí este repositorio → *Deploy* (sin configuración).
 También sirve GitHub Pages. Para probar en tu computadora: `python3 -m http.server`.
+
+## Créditos
+El giro realista de las hojas usa [StPageFlip](https://github.com/Nodlik/StPageFlip) (licencia MIT, incluida en `page-flip.LICENSE.txt`).

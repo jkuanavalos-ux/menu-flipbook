@@ -11,23 +11,13 @@ body{overflow:hidden;font-family:var(--serif);color:var(--ink);background:radial
 .stage{flex:1;display:grid;place-items:center;padding:16px 0 0;min-height:0}
 
 /* ===== Libro ===== */
-.book{position:relative;width:calc(var(--w) * 2);height:calc(var(--w) * 4 / 3);perspective:2600px;transition:transform .8s ease;cursor:pointer;touch-action:pan-y;user-select:none}
-.book.atcover{transform:translateX(-25%)}
-.book.atend{transform:translateX(25%)}
-.book.single{width:var(--w)}
-.sheet{position:absolute;left:50%;top:0;width:var(--w);height:100%;transform-origin:left center;transform-style:preserve-3d;transition:transform .85s cubic-bezier(.45,.05,.25,1)}
-.single .sheet{left:0;transition:transform .85s cubic-bezier(.45,.05,.25,1),opacity 0s}
-.single .sheet.flipped{opacity:0;transition:transform .85s cubic-bezier(.45,.05,.25,1),opacity 0s .85s}
-.sheet.flipped{transform:rotateY(-180deg)}
-.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:3px 8px 8px 3px;box-shadow:0 12px 30px rgba(0,0,0,.45)}
-.backf{transform:rotateY(180deg);border-radius:8px 3px 3px 8px}
-/* sombra del lomo */
-.front::after,.backf::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit}
-.front::after{background:linear-gradient(90deg,rgba(60,30,5,.38),rgba(60,30,5,0) 9%)}
-.backf::after{background:linear-gradient(270deg,rgba(60,30,5,.38),rgba(60,30,5,0) 9%)}
-
+.bookbox{width:calc(var(--w) * 2);height:calc(var(--w) * 4 / 3);transition:transform .8s ease}
+.bookbox.atcover{transform:translateX(-25%)}
+.bookbox.atend{transform:translateX(25%)}
+.book{width:100%;height:100%;touch-action:pan-y;user-select:none}
+.page{background:var(--paper);overflow:hidden}
 /* ===== Papel viejo ===== */
-.paper{position:relative;width:100%;height:100%;overflow:hidden;font-size:calc(var(--w) / 25);padding:2.4em 2.1em 2em;border-radius:inherit;
+.paper{position:relative;width:100%;height:100%;box-shadow:inset 0 0 0 1px rgba(90,50,10,.25);overflow:hidden;font-size:calc(var(--w) / 25);padding:2.4em 2.1em 2em;
   background:
     radial-gradient(circle at 82% 88%,rgba(120,65,10,.16) 0,rgba(120,65,10,0) 13%),
     radial-gradient(circle at 14% 18%,rgba(140,90,20,.12) 0,rgba(140,90,20,0) 16%),
@@ -73,9 +63,10 @@ body{overflow:hidden;font-family:var(--serif);color:var(--ink);background:radial
 #count{min-width:7.5em;text-align:center}
 
 /* ===== Celular ===== */
-@media(max-width:760px){
+@media(max-width:600px){
   :root{--w:min(92vw,calc((100dvh - 110px) * .75))}
+  .bookbox{width:var(--w)}
+  .bookbox.atcover,.bookbox.atend{transform:none}
   .stage{padding-top:10px}
   .paper{font-size:calc(var(--w) / 22)}
 }
-@media(prefers-reduced-motion:reduce){.sheet,.book{transition:none!important}}

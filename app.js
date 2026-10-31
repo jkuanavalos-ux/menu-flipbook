@@ -2,9 +2,8 @@ import { MENU } from './menu.js';
 const $ = s => document.querySelector(s);
 const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const money = n => `${Number(n).toLocaleString('es-PY')} ${esc(MENU.currency)}`;
-const mq = matchMedia('(max-width:760px)');
 const book = $('#book');
-let pages = [], sheets = [], page = 0, single = mq.matches;
+let pages = [], flip;
 
 /* ---------- Páginas ---------- */
 function buildPages() {
@@ -17,49 +16,27 @@ function buildPages() {
   return list;
 }
 
-/* ---------- Libro ---------- */
-function render() {
-  single = mq.matches;
-  book.className = 'book' + (single ? ' single' : '');
-  book.innerHTML = '';
-  sheets = [];
-  const step = single ? 1 : 2;
-  for (let i = 0; i < pages.length; i += step) {
-    const sh = document.createElement('div');
-    sh.className = 'sheet';
-    sh.innerHTML = `<div class="face front">${pages[i]}</div><div class="face backf">${single ? '<div class="paper"></div>' : pages[i + 1]}</div>`;
-    book.appendChild(sh); sheets.push(sh);
-  }
-  update();
-}
-const maxPage = () => single ? pages.length - 1 : pages.length;
-function update() {
-  const flipped = single ? page : page / 2, n = sheets.length;
-  sheets.forEach((s, j) => { s.classList.toggle('flipped', j < flipped); s.style.zIndex = j < flipped ? j : n - j; });
-  book.classList.toggle('atcover', !single && page === 0);
-  book.classList.toggle('atend', !single && page >= pages.length);
-  $('#prev').disabled = page <= 0; $('#next').disabled = page >= maxPage();
-  const L = pages.length;
-  $('#count').textContent = single ? `${page + 1} / ${L}` : page === 0 ? 'Portada' : page >= L ? 'Contraportada' : `${page}–${page + 1} / ${L}`;
-}
-function go(p) { page = Math.max(0, Math.min(maxPage(), p)); update(); }
-const next = () => go(page + (single ? 1 : 2)), prev = () => go(page - (single ? 1 : 2));
-
-/* ---------- Controles ---------- */
-$('#next').onclick = next; $('#prev').onclick = prev;
-addEventListener('keydown', e => { if (e.key === 'ArrowRight') next(); if (e.key === 'ArrowLeft') prev(); });
-let x0 = null;
-book.addEventListener('pointerdown', e => { x0 = e.clientX; });
-book.addEventListener('pointerup', e => {
-  if (x0 === null) return; const dx = e.clientX - x0; x0 = null;
-  if (Math.abs(dx) > 45) return dx < 0 ? next() : prev();
-  const jump = e.target.closest('[data-go]');
-  if (jump) { const p = +jump.dataset.go; return go(single || p % 2 === 0 ? p : p + 1); }
-  const r = book.getBoundingClientRect();
-  e.clientX > r.left + r.width / 2 ? next() : prev();
-});
-book.addEventListener('pointercancel', () => { x0 = null; });
-mq.addEventListener('change', () => { page = single ? page - (page % 2) : page; render(); });
-
+/* ---------- Libro con giro de hoja realista (StPageFlip, MIT) ---------- */
 pages = buildPages();
-render();
+book.innerHTML = pages.map((p, i) => `<div class="page" data-density="${i === 0 || i === pages.length - 1 ? 'hard' : 'soft'}">${p}</div>`).join('');
+flip = new St.PageFlip(book, {
+  width: 400, height: 533, size: 'stretch', minWidth: 280, maxWidth: 700, minHeight: 373, maxHeight: 934,
+  showCover: true, usePortrait: true, drawShadow: true, maxShadowOpacity: .55,
+  flippingTime: 1000, mobileScrollSupport: false, swipeDistance: 25, clickEventForward: true
+});
+flip.loadFromHTML(book.querySelectorAll('.page'));
+
+const L = pages.length;
+function update() {
+  const p = flip.getCurrentPageIndex(), portrait = flip.getOrientation() === 'portrait';
+  const box = $('#bookbox'); box.classList.toggle('atcover', !portrait && p === 0); box.classList.toggle('atend', !portrait && p >= L - 1);
+  $('#prev').disabled = p <= 0;
+  $('#next').disabled = portrait ? p >= L - 1 : p >= L - 2;
+  $('#count').textContent = p === 0 ? 'Portada' : p >= L - 1 ? 'Contraportada' : portrait ? `${p + 1} / ${L}` : `${p}–${p + 1} / ${L}`;
+}
+flip.on('flip', update); flip.on('changeOrientation', update); flip.on('init', update);
+update();
+$('#next').onclick = () => flip.flipNext();
+$('#prev').onclick = () => flip.flipPrev();
+addEventListener('keydown', e => { if (e.key === 'ArrowRight') flip.flipNext(); if (e.key === 'ArrowLeft') flip.flipPrev(); });
+book.addEventListener('click', e => { const j = e.target.closest('[data-go]'); if (j) flip.flip(+j.dataset.go); });
